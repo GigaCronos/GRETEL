@@ -1,0 +1,101 @@
+{
+  "experiment": {
+    "scope": "hypercube_aco_asd_experiments",
+    "parameters": {
+      "lock_release_tout": 120,
+      "propagate": [
+        {
+          "in_sections": [
+            "doe-triplets/explainer"
+          ],
+          "params": {
+            "fold_id": -1,
+            "parallel_processing": true
+          }
+        },
+        {
+          "in_sections": [
+            "doe-triplets/oracle"
+          ],
+          "params": {
+            "fold_id": -1,
+            "retrain": false
+          }
+        },
+        {
+          "in_sections": [
+            "doe-triplets/dataset"
+          ],
+          "params": {
+            "compose_man": "lab/config/snippets/datasets/centr_and_weights.json"
+          }
+        }
+      ],
+      "expand": {
+        "folds": [
+          "doe-triplets/explainer"
+        ],
+        "triplets": true
+      }
+    }
+  },
+  "doe-triplets": [
+    {
+      "compose_do": "./lab/config/snippets/do-pairs/ASD_ASD-Custom.json",
+      "explainer": 
+        {
+            "class": "src.explainer.future.metaheuristic.aco.hypercube_aco.HypercubeACOExplainer",
+            "parameters": {
+                "num_iterations": 10,
+                "initial_num_ants": 2,
+                "final_num_ants": 10,
+                "beta_compatibility": 0,
+                "alpha_pheromone": 2.5,
+                "rho": 0.20,
+                "score_gamma": 5,
+                "deposit_scale": 10,
+                "early_stop_patience": 5,
+                "random_seed": 0,
+
+                "oracle_query_probability": 0.2,
+                "oracle_query_probability_schedule": "inverse",
+                "min_oracle_query_probability": 0.01,
+                "oracle_query_decay_scale": 50.0,
+
+                "backward_initial_batch_size": 20,
+                "backward_batch_growth": 1.50,
+                "backward_batch_shrink": 0.5,
+
+                "num_workers": 4
+
+            }
+        }        
+    },
+    {
+      "compose_do": "./lab/config/snippets/do-pairs/ASD_ASD-Custom.json",
+      "explainer": 
+        {
+            "class": "src.explainer.future.heuristic.obs.ObliviousBidirectionalSearchExplainer",
+            "parameters":{}
+        }        
+    },
+    {
+      "compose_do": "./lab/config/snippets/do-pairs/ASD_ASD-Custom.json",
+      "explainer": 
+        {
+            "class": "src.explainer.future.search.i_rand.IRandExplainer",
+            "parameters": {
+                  "p": 0.01,
+                  "t": 3
+                }
+        }        
+  }  
+  ],
+  "evaluator": {
+    "class": "src.evaluation.future.evaluator.Evaluator",
+    "parameters": {
+      "compose_pip": "./lab/config/snippets/default_pipeline.json"
+    }
+  },
+  "compose_strs": "./lab/config/snippets/default_store_paths.json"
+}
